@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Today</h1>
+      <button id="logout" type="button" class="link" hidden>Forget password</button>
+    </header>
+
+    <form id="login" hidden>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Save</button>
+    </form>
+
+    <section id="app" hidden>
+      <form id="pick-date">
+        <label for="date">Day</label>
+        <input id="date" type="date" required>
+        <button type="submit">Load</button>
+      </form>
+
+      <p id="status" role="status"></p>
+
+      <h2>Free time</h2>
+      <ul id="blocks"></ul>
+
+      <h2>Busy</h2>
+      <ul id="busy"></ul>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
