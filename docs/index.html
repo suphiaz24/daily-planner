@@ -9,7 +9,7 @@
 <body>
   <main>
     <header>
-      <h1>Today</h1>
+      <h1 id="title">Today</h1>
       <button id="logout" type="button" class="link" hidden>Forget password</button>
     </header>
 
@@ -20,19 +20,33 @@
     </form>
 
     <section id="app" hidden>
-      <form id="pick-date">
-        <label for="date">Day</label>
-        <input id="date" type="date" required>
-        <button type="submit">Load</button>
-      </form>
+      <div class="toolbar">
+        <div id="views" class="group" role="group" aria-label="View">
+          <button type="button" data-days="1">Day</button>
+          <button type="button" data-days="3">3 days</button>
+          <button type="button" data-days="7">Week</button>
+        </div>
+        <div class="group">
+          <button id="prev" type="button" aria-label="Previous">‹</button>
+          <button id="today" type="button">Today</button>
+          <button id="next" type="button" aria-label="Next">›</button>
+          <input id="date" type="date" aria-label="Go to date" required>
+        </div>
+      </div>
 
       <p id="status" role="status"></p>
 
-      <h2>Free time</h2>
-      <ul id="blocks"></ul>
+      <div class="grid-wrap">
+        <div id="grid" class="grid"></div>
+      </div>
 
-      <h2>Busy</h2>
-      <ul id="busy"></ul>
+      <div id="day-lists">
+        <h2>Free time</h2>
+        <ul id="blocks"></ul>
+
+        <h2>Busy</h2>
+        <ul id="busy"></ul>
+      </div>
     </section>
   </main>
 

@@ -18,6 +18,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -27,7 +28,7 @@ body {
 }
 
 main {
-  max-width: 36rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 1.5rem 1rem;
 }
@@ -38,7 +39,7 @@ header {
   align-items: baseline;
 }
 
-h1 { margin: 0 0 1rem; }
+h1 { margin: 0 0 1rem; font-size: clamp(1.5rem, 6vw, 2rem); }
 h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 
 form {
@@ -62,6 +63,82 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 button.link { border: 0; color: var(--accent); padding: 0; }
 
 #status { color: var(--muted); }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.group { display: flex; gap: 0.25rem; align-items: center; }
+.group button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+/* Calendar grid: a time column, then one column per day. */
+.grid-wrap { overflow-x: auto; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 3rem repeat(var(--cols), minmax(4.5rem, 1fr));
+  padding-top: 0.5rem;
+}
+
+.grid-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.grid-head strong { font-size: 1.1rem; color: var(--fg); }
+.grid-head.today, .grid-head.today strong { color: var(--accent); }
+
+.grid-times, .grid-col { position: relative; height: var(--height); }
+
+/* Keeps hour labels visible when the week view scrolls sideways on a phone. */
+.grid-times { position: sticky; left: 0; z-index: 1; background: var(--bg); }
+
+.grid-times span {
+  position: absolute;
+  right: 0.4rem;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.grid-times span:first-child { transform: none; }
+
+.grid-col {
+  border-left: 1px solid var(--line);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px);
+  background-size: 100% var(--hour);
+}
+
+.slot {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  flex-direction: column;
+  padding: 2px 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+.slot span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot.short span + span { display: none; }
+.slot.busy { background: color-mix(in srgb, var(--muted) 28%, var(--bg)); }
+.slot.busy span:first-child { font-weight: 600; }
+.slot.free {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--bg));
+}
+
+#day-lists { max-width: 36rem; }
 
 ul { list-style: none; padding: 0; margin: 0; }
 li { padding: 0.5rem 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }

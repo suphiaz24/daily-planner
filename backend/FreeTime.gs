@@ -25,8 +25,6 @@ function findFreeBlocks(dateStr) {
   }
 
   const busy = getBusyEvents_(dayStart, dayEnd);
-  const dinnerStart = atTime_(day, CONFIG.DINNER_START);
-  busy.push({ title: 'Dinner', start: dinnerStart.getTime(), end: dinnerStart.getTime() + CONFIG.DINNER_MIN * MIN_MS, noBuffer: true });
 
   const free = computeFreeBlocks(busy, windowStart.getTime(), windowEnd.getTime(), {
     bufferMs: CONFIG.WALK_BUFFER_MIN * MIN_MS,
@@ -59,11 +57,11 @@ function findFreeBlocks(dateStr) {
 
 /**
  * Pure interval math (no Calendar calls) so it can be tested in Tests.gs.
- * busy: [{ start: ms, end: ms, noBuffer?: bool }]. Returns [{ start: ms, end: ms }].
+ * busy: [{ start: ms, end: ms }]. Returns [{ start: ms, end: ms }].
  */
 function computeFreeBlocks(busy, windowStart, windowEnd, opts) {
   const intervals = busy
-    .map(function (b) { return { start: b.start, end: b.end + (b.noBuffer ? 0 : opts.bufferMs) }; })
+    .map(function (b) { return { start: b.start, end: b.end + opts.bufferMs }; })
     .filter(function (b) { return b.end > windowStart && b.start < windowEnd; })
     .sort(function (a, b) { return a.start - b.start; });
 
@@ -80,18 +78,46 @@ function computeFreeBlocks(busy, windowStart, windowEnd, opts) {
     .filter(function (f) { return f.end - f.start >= opts.minBlockMs; });
 }
 
+/**
+ * Uses the Calendar advanced service (enabled in appsscript.json) because
+ * CalendarApp can't see an event's "Show as: Free" setting.
+ * Skipped: all-day events, events marked Free, and events you declined.
+ */
 function getBusyEvents_(dayStart, dayEnd) {
   const busy = [];
-  CONFIG.SOURCE_CALENDAR_IDS.forEach(function (id) {
-    const cal = id === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(id);
-    if (!cal) throw new Error('Calendar not found: ' + id);
-    cal.getEvents(dayStart, dayEnd).forEach(function (ev) {
-      if (ev.isAllDayEvent()) return;
-      if (ev.getMyStatus() === CalendarApp.GuestStatus.NO) return;
-      busy.push({ title: ev.getTitle(), start: ev.getStartTime().getTime(), end: ev.getEndTime().getTime() });
-    });
+  getBusyCalendarIds_().forEach(function (id) {
+    let pageToken;
+    do {
+      const page = Calendar.Events.list(id, {
+        timeMin: dayStart.toISOString(),
+        timeMax: dayEnd.toISOString(),
+        singleEvents: true,
+        maxResults: 250,
+        pageToken: pageToken,
+      });
+      (page.items || []).forEach(function (ev) {
+        if (!ev.start.dateTime) return; // all-day
+        if (ev.transparency === 'transparent') return; // "Show as: Free"
+        const me = (ev.attendees || []).filter(function (a) { return a.self; })[0];
+        if (me && me.responseStatus === 'declined') return;
+        busy.push({
+          title: ev.summary || '(no title)',
+          start: new Date(ev.start.dateTime).getTime(),
+          end: new Date(ev.end.dateTime).getTime(),
+        });
+      });
+      pageToken = page.nextPageToken;
+    } while (pageToken);
   });
   return busy;
+}
+
+// Source calendars plus the Planner calendar, so study blocks count as busy.
+function getBusyCalendarIds_() {
+  const ids = CONFIG.SOURCE_CALENDAR_IDS.slice();
+  const plannerId = PropertiesService.getScriptProperties().getProperty('PLANNER_CALENDAR_ID');
+  if (plannerId && ids.indexOf(plannerId) === -1) ids.push(plannerId);
+  return ids;
 }
 
 // ---- date helpers (all in the script time zone) ----

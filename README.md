@@ -24,7 +24,7 @@ Full plan: `~/Downloads/daily-planner-plan.md`.
    - Turn on **Show "appsscript.json" manifest file in editor**
    - **Script properties → Add script property:** `APP_PASSWORD` = a long random password
 3. **Editor:** create one file for each file in `backend/` (same names; `.gs` files are "Script" files) and paste in its contents. Replace the contents of `appsscript.json` too.
-4. Edit `Config.gs` if needed: day start, sleep cutoff, walking buffer, dinner time, and extra calendar IDs (for example, a separate class calendar).
+4. Edit `Config.gs` if needed: day start, sleep cutoff, walking buffer, and extra calendar IDs (for example, a separate class calendar).
 5. Run `test_computeFreeBlocks`. Every line in the log should say PASS.
 6. Run `setup`. Approve the permission prompt. This creates the **Planner** calendar and the **Daily Planner Data** sheet.
 7. Run `test_freeTimeToday`. Check the logged free blocks against your real calendar.
@@ -38,6 +38,10 @@ Full plan: `~/Downloads/daily-planner-plan.md`.
 2. Run it locally: `python -m http.server 8000 --directory docs`, then open http://localhost:8000.
 3. Enter the password once. It is saved in this browser only, never in the repo.
 4. To host it: push to GitHub, then **Settings → Pages → Deploy from a branch → `main` / `/docs`**.
+
+## What counts as busy
+
+Every timed event on the calendars in `SOURCE_CALENDAR_IDS`, plus the walking buffer after it. Ignored: all-day events, events you declined, and events set to **Show as: Free**. To skip one class, open that occurrence in Google Calendar and set it to Free.
 
 ## API
 

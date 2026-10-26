@@ -5,6 +5,7 @@
 const CONFIG = {
   // Calendars that count as "busy". 'primary' = your default calendar.
   // Add class/club calendar IDs here (Calendar settings → Integrate calendar → Calendar ID).
+  // The Planner calendar is always counted too (see getBusyCalendarIds_).
   SOURCE_CALENDAR_IDS: ['primary'],
 
   // Name of the calendar the planner writes its own blocks to (created by setup()).
@@ -19,10 +20,6 @@ const CONFIG = {
 
   // Free gaps shorter than this are dropped.
   MIN_BLOCK_MIN: 20,
-
-  // Dinner is reserved as busy time. Fixed for now; could be made flexible later.
-  DINNER_START: '18:00',
-  DINNER_MIN: 60,
 
   // Today's window starts at "now" rounded up to this many minutes.
   ROUND_NOW_TO_MIN: 5,

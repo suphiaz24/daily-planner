@@ -36,11 +36,6 @@ function test_computeFreeBlocks() {
       busy: [{ start: t('07:00'), end: t('08:30') }, { start: t('22:30'), end: t('23:59') }],
       expect: '08:45-22:30',
     },
-    {
-      name: 'noBuffer (dinner) gets no walking time',
-      busy: [{ start: t('18:00'), end: t('19:00'), noBuffer: true }],
-      expect: '08:00-18:00, 19:00-23:00',
-    },
   ];
 
   let failed = 0;
